@@ -82,7 +82,9 @@ function afficherDetails(joueur) {
     <p><strong>Éducateur :</strong> ${joueur.Educateur}</p>
     <p><strong>Équipe :</strong> ${joueur.Secteur}</p>
     <p><strong>Catégorie :</strong> ${joueur.Catégorie}</p>
-    <p><strong>Clickez sur se lien pour voir les Horaires de Matchs et D'entrainement pour la saison :</strong> ${joueur.Horaire}</p>
+    <p><strong>Cliquez sur ce lien pour voir les horaires de matchs et d'entraînement pour la saison :</strong> <a href="${joueur.Horaire}" target="_blank">Horaire de la saison</a></p>
+
+
   `;
 }
 
