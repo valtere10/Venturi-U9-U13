@@ -77,7 +77,7 @@ function afficherDetails(joueur) {
   resultatDiv.innerHTML = `
     <h3>${joueur.Nom} ${joueur.Prenom}</h3>
     <p><strong>Éducateur :</strong> ${joueur.Educateur}</p>
-    <p><strong>Equipe :</strong> ${joueur.Equipe}</p>
+    <p><strong>Equipe :</strong> ${joueur.Secteur}</p>
     <p><strong>Catégorie :</strong> ${joueur.Catégorie}</p>
   `;
 }
