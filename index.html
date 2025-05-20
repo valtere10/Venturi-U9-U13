@@ -13,12 +13,20 @@
     <input type="text" id="search" placeholder="Entrez le nom du joueur" />
     <button onclick="rechercher()">Chercher</button>
 
-    <input
-      type="date"
-      id="dob"
-      placeholder="AAAA-MM-JJ"
-      style="display: none; margin-top: 10px;" />
-    <button id="validerDOB" style="display: none;">Valider</button>
+    <div id="confirmation" style="display: none; margin-top: 15px;">
+      <p><strong>Nom :</strong> <span id="confirmNom"></span></p>
+      <p><strong>Catégorie :</strong> <span id="confirmCategorie"></span></p>
+
+      <label for="dob"><strong>Date de naissance (AAAA-MM-JJ) :</strong></label>
+      <input
+        type="text"
+        id="dob"
+         placeholder="Ex: 1999-05-07"
+         maxlength="10"
+        style="width: 200px;" />
+
+      <button id="validerDOB">Valider</button>
+    </div>
 
     <div id="resultat"></div>
   </div>
@@ -26,4 +34,3 @@
   <script src="script.js?v=1.0.1"></script>
 </body>
 </html>
-

@@ -62,7 +62,6 @@ function rechercher() {
   const joueur = joueurData.fields;
   const bouton = document.createElement("button");
 
-  // Affichage stylé avec nom/prénom à gauche et catégorie à droite
   bouton.innerHTML = `
     <span class="nom-prenom">${joueur.Nom} ${joueur.Prenom}</span>
     <span class="categorie">${joueur.Catégorie}</span>
@@ -71,36 +70,43 @@ function rechercher() {
   bouton.classList.add("suggestion");
 
   bouton.onclick = () => {
+    const confirmationDiv = document.getElementById("confirmation");
+    const confirmNom = document.getElementById("confirmNom");
+    const confirmCategorie = document.getElementById("confirmCategorie");
     const dobInput = document.getElementById("dob");
     const validerBtn = document.getElementById("validerDOB");
 
-    dobInput.style.display = "inline";
-    validerBtn.style.display = "inline";
+    // Afficher le formulaire avec les infos du joueur
+    confirmNom.textContent = `${joueur.Nom} ${joueur.Prenom}`;
+    confirmCategorie.textContent = joueur.Catégorie;
+    dobInput.value = "";
+    confirmationDiv.style.display = "block";
+    // Cacher tous les autres boutons
+    resultatDiv.innerHTML = "";
 
-    // Nettoyer les anciens écouteurs
+
+    // Nettoyer anciens événements
     const newBtn = validerBtn.cloneNode(true);
     validerBtn.parentNode.replaceChild(newBtn, validerBtn);
 
+    // Vérifier la date entrée
     newBtn.onclick = () => {
-      const saisie = dobInput.value.trim(); // Ex: "2012-04-10"
-      const dobJoueur = joueur["Date de naissance"]; // Vérifie le nom exact dans Airtable
+      const saisie = dobInput.value.trim(); // ex : 2012-05-03
+      const dobJoueur = joueur["Date de naissance"]; // ce champ doit exister dans Airtable
 
       if (saisie === dobJoueur) {
+        confirmationDiv.style.display = "none";
         afficherDetails(joueur);
       } else {
-        alert("Date de naissance incorrecte.");
+        alert("Date de naissance incorrecte. Format attendu : AAAA-MM-JJ");
       }
-
-      // Réinitialisation du champ
-      dobInput.style.display = "none";
-      newBtn.style.display = "none";
-      dobInput.value = "";
     };
   };
 
   boutonsAffiches.push(bouton);
   resultatDiv.appendChild(bouton);
 });
+
 
 }
 
@@ -158,8 +164,19 @@ window.onload = () => {
       }
     }
   });
+   document.getElementById("dob").addEventListener("input", function () {
+    let val = this.value.replace(/\D/g, ""); // Garde que les chiffres
+
+    if (val.length > 4 && val.length <= 6) {
+      val = val.slice(0, 4) + '-' + val.slice(4);
+    } else if (val.length > 6) {
+      val = val.slice(0, 4) + '-' + val.slice(4, 6) + '-' + val.slice(6, 8);
+    }
+
+    this.value = val;
+  });
   setInterval(() => {
   chargerTousLesJoueurs().then(rechercher);
-}, 60000);
+ }, 60000);
 
 };
