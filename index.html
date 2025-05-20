@@ -9,8 +9,16 @@
   <div class="container">
     <img src="Venturi.jpeg" alt="Logo du Club Venturi" class="logo">
     <h2>Recherche de joueur</h2>
+
     <input type="text" id="search" placeholder="Entrez le nom du joueur" />
     <button onclick="rechercher()">Chercher</button>
+
+    <input
+      type="date"
+      id="dob"
+      placeholder="AAAA-MM-JJ"
+      style="display: none; margin-top: 10px;" />
+    <button id="validerDOB" style="display: none;">Valider</button>
 
     <div id="resultat"></div>
   </div>
@@ -18,3 +26,4 @@
   <script src="script.js?v=1.0.1"></script>
 </body>
 </html>
+

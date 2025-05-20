@@ -59,20 +59,49 @@ function rechercher() {
   }
 
   resultats.forEach((joueurData, index) => {
-    const joueur = joueurData.fields;
-    const bouton = document.createElement("button");
-    bouton.innerHTML = `
+  const joueur = joueurData.fields;
+  const bouton = document.createElement("button");
+
+  // Affichage stylé avec nom/prénom à gauche et catégorie à droite
+  bouton.innerHTML = `
     <span class="nom-prenom">${joueur.Nom} ${joueur.Prenom}</span>
-    <span class="categorie">${joueur.Catégorie}</span>`;
+    <span class="categorie">${joueur.Catégorie}</span>
+  `;
 
-    bouton.classList.add("suggestion");
-    bouton.onclick = () => {
-      afficherDetails(joueur);
+  bouton.classList.add("suggestion");
+
+  bouton.onclick = () => {
+    const dobInput = document.getElementById("dob");
+    const validerBtn = document.getElementById("validerDOB");
+
+    dobInput.style.display = "inline";
+    validerBtn.style.display = "inline";
+
+    // Nettoyer les anciens écouteurs
+    const newBtn = validerBtn.cloneNode(true);
+    validerBtn.parentNode.replaceChild(newBtn, validerBtn);
+
+    newBtn.onclick = () => {
+      const saisie = dobInput.value.trim(); // Ex: "2012-04-10"
+      const dobJoueur = joueur["Date de naissance"]; // Vérifie le nom exact dans Airtable
+
+      if (saisie === dobJoueur) {
+        afficherDetails(joueur);
+      } else {
+        alert("Date de naissance incorrecte.");
+      }
+
+      // Réinitialisation du champ
+      dobInput.style.display = "none";
+      newBtn.style.display = "none";
+      dobInput.value = "";
     };
+  };
 
-    boutonsAffiches.push(bouton);
-    resultatDiv.appendChild(bouton);
-  });
+  boutonsAffiches.push(bouton);
+  resultatDiv.appendChild(bouton);
+});
+
 }
 
 function afficherDetails(joueur) {
