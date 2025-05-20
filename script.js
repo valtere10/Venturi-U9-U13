@@ -61,7 +61,7 @@ function rechercher() {
   resultats.forEach((joueurData, index) => {
     const joueur = joueurData.fields;
     const bouton = document.createElement("button");
-    bouton.innerText = `${joueur.Nom} ${joueur.Prenom}${joueur.Catégorie}`;
+    bouton.innerText = `${joueur.Nom} ${joueur.Prenom}  ${joueur.Catégorie}`;
     bouton.classList.add("suggestion");
     bouton.onclick = () => {
       afficherDetails(joueur);
