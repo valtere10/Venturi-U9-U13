@@ -82,6 +82,7 @@ function afficherDetails(joueur) {
     <p><strong>Éducateur :</strong> ${joueur.Educateur}</p>
     <p><strong>Équipe :</strong> ${joueur.Secteur}</p>
     <p><strong>Catégorie :</strong> ${joueur.Catégorie}</p>
+    <p><strong>Clickez sur se lien pour voir les Horaires de Matchs et D'entrainement pour la saison :</strong> ${joueur.Horaire}</p>
   `;
 }
 
