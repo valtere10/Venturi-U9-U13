@@ -7,16 +7,28 @@ let boutonsAffiches = [];
 let indexSelection = -1;
 
 async function chargerTousLesJoueurs() {
-  const url = `https://api.airtable.com/v0/${baseId}/${tableName}?pageSize=100`;
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
+  const urlBase = `https://api.airtable.com/v0/${baseId}/${tableName}`;
+  let offset = null;
+  allJoueurs = [];
 
-  const data = await response.json();
-  allJoueurs = data.records;
+  do {
+    const url = offset
+      ? `${urlBase}?pageSize=100&offset=${offset}`
+      : `${urlBase}?pageSize=100`;
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+    allJoueurs = allJoueurs.concat(data.records);
+    offset = data.offset; // S'il y a une autre page, on continue
+
+  } while (offset); // boucle tant qu’il reste des pages à charger
 }
+
 
 function rechercher() {
   const input = document.getElementById("search").value.toLowerCase().trim();
@@ -83,6 +95,7 @@ function updateSelection() {
 // Chargement initial
 window.onload = () => {
   chargerTousLesJoueurs();
+  
 
   const searchInput = document.getElementById("search");
 
@@ -110,4 +123,8 @@ window.onload = () => {
       }
     }
   });
+  setInterval(() => {
+  chargerTousLesJoueurs().then(rechercher);
+}, 60000);
+
 };
