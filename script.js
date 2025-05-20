@@ -1,16 +1,13 @@
-const token = "patAA6paOP5k4gsgp.653f8c1d22efad1494913278245e6bac13429bd267ea521629f3491777e01d54"; // Mets ici ta clé d'API personnelle
+const token = "patAA6paOP5k4gsgp.653f8c1d22efad1494913278245e6bac13429bd267ea521629f3491777e01d54";
 const baseId = "appqaKBY4SH528vtX";
-const tableName = "U9 - U13"; // ex: Joueurs
+const tableName = "U9 - U13";
 
-async function rechercher() {
-  const nom = document.getElementById("search").value;
-  const url = `https://api.airtable.com/v0/${baseId}/${tableName}?filterByFormula=FIND("${encodeURIComponent(nom)}", {NOM COMPLET})`;
+let allJoueurs = [];
+let boutonsAffiches = [];
+let indexSelection = -1;
 
-
-
-  const resultatDiv = document.getElementById("resultat");
-  resultatDiv.innerHTML = "Recherche en cours...";
-
+async function chargerTousLesJoueurs() {
+  const url = `https://api.airtable.com/v0/${baseId}/${tableName}?pageSize=100`;
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`
@@ -18,18 +15,99 @@ async function rechercher() {
   });
 
   const data = await response.json();
-  console.log(data); // Pour voir ce que l'API retourne
-
-  if (!data.records || data.records.length === 0) {
-
-    resultatDiv.innerHTML = "Aucun joueur trouvé.";
-  } else {
-    const joueur = data.records[0].fields;
-    resultatDiv.innerHTML = `
-      <p><strong>Nom :</strong> ${joueur.Nom}</p>
-      <p><strong>Prénom :</strong> ${joueur.Prenom}</p>
-      <p><strong>Éducateur :</strong> ${joueur.Educateur}</p>
-      <p><strong>Secteur :</strong> ${joueur.Secteur}</p>
-    `;
-  }
+  allJoueurs = data.records;
 }
+
+function rechercher() {
+  const input = document.getElementById("search").value.toLowerCase().trim();
+  const resultatDiv = document.getElementById("resultat");
+  resultatDiv.innerHTML = "";
+
+  boutonsAffiches = [];
+  indexSelection = -1;
+
+  if (input.length === 0) return;
+
+  const resultats = allJoueurs.filter(rec => {
+    const nom = (rec.fields["Nom"] || "").toLowerCase();
+    const prenom = (rec.fields["Prenom"] || "").toLowerCase();
+    const nomComplet = `${nom} ${prenom}`;
+    const nomInverse = `${prenom} ${nom}`;
+    return (
+      nom.includes(input) ||
+      prenom.includes(input) ||
+      nomComplet.includes(input) ||
+      nomInverse.includes(input)
+    );
+  });
+
+  if (resultats.length === 0) {
+    resultatDiv.innerHTML = "Aucun joueur trouvé.";
+    return;
+  }
+
+  resultats.forEach((joueurData, index) => {
+    const joueur = joueurData.fields;
+    const bouton = document.createElement("button");
+    bouton.innerText = `${joueur.Nom} ${joueur.Prenom}`;
+    bouton.classList.add("suggestion");
+    bouton.onclick = () => {
+      afficherDetails(joueur);
+    };
+
+    boutonsAffiches.push(bouton);
+    resultatDiv.appendChild(bouton);
+  });
+}
+
+function afficherDetails(joueur) {
+  const resultatDiv = document.getElementById("resultat");
+  resultatDiv.innerHTML = `
+    <h3>${joueur.Nom} ${joueur.Prenom}</h3>
+    <p><strong>Éducateur :</strong> ${joueur.Educateur}</p>
+    <p><strong>Secteur :</strong> ${joueur.Secteur}</p>
+    <p><strong>Catégorie :</strong> ${joueur.Catégorie}</p>
+  `;
+}
+
+function updateSelection() {
+  boutonsAffiches.forEach((btn, i) => {
+    if (i === indexSelection) {
+      btn.classList.add("selected");
+    } else {
+      btn.classList.remove("selected");
+    }
+  });
+}
+
+// Chargement initial
+window.onload = () => {
+  chargerTousLesJoueurs();
+
+  const searchInput = document.getElementById("search");
+
+  // Recherche dynamique à chaque frappe
+  searchInput.addEventListener("input", rechercher);
+
+  // Navigation clavier + activation avec Entrée
+  searchInput.addEventListener("keydown", function (event) {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (indexSelection < boutonsAffiches.length - 1) {
+        indexSelection++;
+        updateSelection();
+      }
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      if (indexSelection > 0) {
+        indexSelection--;
+        updateSelection();
+      }
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      if (indexSelection >= 0 && indexSelection < boutonsAffiches.length) {
+        boutonsAffiches[indexSelection].click();
+      }
+    }
+  });
+};
